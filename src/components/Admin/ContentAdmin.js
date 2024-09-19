@@ -6,6 +6,8 @@ import './Seller/Seller.css'
 function Content(props) {
     let content = '';
     const [inputCustomerId, setInputCustomerId] = useState('');
+    const [inputCustomerDeleteId, setInputCustomerDeleteId] = useState('');
+    const [inputCustomerUpdateId, setInputCustomerUpdateId] = useState('');
     const [viewCustomer, setViewCustomer] = useState([]);
 
     const date = new Date();
@@ -39,13 +41,15 @@ function Content(props) {
         setInputCusOverdue(0);
     };
 
-    const cancleCreateCustomer = () => {
-        setCustomer('');
+    const cancle = () => {
         setInputDate(date.toLocaleDateString());
         setInputCusName('');
         setInputCusPhone('');
         setInputCusCar('');
         setInputCusOverdue(0);
+
+        setInputCustomerId('');
+        setInputCustomerDeleteId('');
     };
 
     const getCustomerById = (id) => {
@@ -62,6 +66,44 @@ function Content(props) {
         setInputCustomerId('');
     };
 
+    const getAllCustomer = () =>{
+        setViewCustomer(customer);
+    };
+
+    const updateCustomer = (id) => {
+        const cusDate = inputDate
+        const cusName = inputCusName;
+        const cusPhone = inputCusPhone;
+        const cusCar = inputCusCar;
+        const cusOverdue = inputCusOverdue;
+        const newCustomer = [...customer];
+        const targetIndex = newCustomer.findIndex(y=>y.id === id);
+        console.log(newCustomer[targetIndex]);
+        newCustomer[targetIndex] = {
+            id: id,
+            cusDate: cusDate,
+            cusName: cusName,
+            cusPhone: cusPhone,
+            cusCar: cusCar,
+            cusOverdue: cusOverdue
+        };
+        setCustomer(newCustomer);
+        setInputDate(cusDate);
+        setInputCusName('');
+        setInputCusPhone('');
+        setInputCusCar('');
+        setInputCusOverdue(0);
+    };
+
+    const deleteCustomer = (id) => {
+        const newCustomer = [...customer];
+        const targetIndex = newCustomer.findIndex(y=>y.id === id); 
+        console.log(targetIndex)
+        newCustomer.splice(targetIndex, 1);
+        setCustomer(newCustomer);
+        setInputCustomerDeleteId('');
+      };
+
     if (props.current==='createCustomerKey'){
         content = (
             <div className='task'>
@@ -71,7 +113,8 @@ function Content(props) {
                         <h3>เพิ่มลูกค้าใหม่</h3>
                     </Row>
                     <Row>
-                        <Input value={inputDate}
+                        <Input styles={{marginTop: '5px'}}
+                        value={inputDate}
                         onChange={(e)=>setInputDate(e.target.value)}
                         style={{width:'300px'}}
                         placeholder={inputDate}
@@ -100,10 +143,10 @@ function Content(props) {
                     </Row>
                     <Row justify={'center'} style={{margin:'5px'}}>
                         <Col span={12}>
-                            <Button onClick={createCustomer}>Submit</Button>
+                            <Button onClick={()=>createCustomer()}>Submit</Button>
                         </Col>
                         <Col span={12}>
-                            <Button onClick={cancleCreateCustomer}>Cancle</Button>
+                            <Button onClick={cancle}>Cancle</Button>
                         </Col>
                     </Row>
                     <Divider />
@@ -125,8 +168,109 @@ function Content(props) {
             </div>
           )
     }
+    else if(props.current==='updateCustomerKey'){
+        content = (<div className='task'>
+            <Row>
+                <Col>
+                <Row justify={'center'}>
+                    <h3>แก้ไขรายละเอียดลูกค้า</h3>
+                </Row>
+                <Row>
+                    <Input value={inputCustomerUpdateId}
+                    onChange={(e)=>setInputCustomerUpdateId(e.target.value)}
+                    style={{width:'300px'}}
+                    placeholder='กรุณาใส่รหัสลูกค้าที่ต้องการแก้ไข'/>
+                </Row>
+                <Row>
+                    <Input value={inputDate}
+                    onChange={(e)=>setInputDate(e.target.value)}
+                    style={{width:'300px'}}
+                    placeholder={inputDate}
+                    disabled='false'/>
+                </Row>
+                <Row>
+                    <Input value={inputCusName} 
+                    onChange={(e)=>setInputCusName(e.target.value)} 
+                    placeholder='ชื่อลูกค้า'style={{marginTop:'5px'}}/>
+                    {/*{customer.map(cus=><div key={cus.id}>{cus.id}{cus.cusName}</div>)}*/}
+                </Row>
+                <Row>
+                    <Input value={inputCusPhone} 
+                    onChange={(e)=>setInputCusPhone(e.target.value)} 
+                    placeholder='เบอร์โทรศัพท์'style={{marginTop:'5px'}}/>
+                </Row>
+                <Row>
+                    <Input value={inputCusCar}
+                    onChange={(e)=>setInputCusCar(e.target.value)} 
+                    placeholder='ทะเบียนรถ'style={{marginTop:'5px'}}/>
+                </Row>
+                <Row>
+                    <Input value={inputCusOverdue}
+                    onChange={(e)=>setInputCusOverdue(e.target.value)} 
+                    placeholder='ยอดค้างชำระ'style={{marginTop:'5px'}}/>
+                </Row>
+                <Row justify={'center'} style={{margin:'5px'}}>
+                    <Col span={12}>
+                        <Button onClick={()=>updateCustomer(inputCustomerUpdateId)}>Update!</Button>
+                    </Col>
+                    <Col span={12}>
+                        <Button onClick={cancle}>Cancle</Button>
+                    </Col>
+                </Row>
+                <Divider />
+                <List
+                    dataSource={customer}
+                    renderItem={cus =>(
+                    <List.Item>
+                        {cus.id}--
+                        {cus.cusDate}--
+                        {cus.cusName}--
+                        {cus.cusPhone}--
+                        {cus.cusCar}--
+                        {cus.cusOverdue}.
+                    </List.Item>
+                    )}
+                />
+                </Col>
+            </Row>
+        </div>)
+    }
     else if(props.current==='deleteCustomerKey'){
-        content = 'ลบรายละเอียดลูกค้า'
+        content = (<div className="task">
+            <Col>
+                <Row>
+                    ลบรายละเอียดลูกค้า
+                </Row>
+                <Row>
+                    <Input value={inputCustomerDeleteId}
+                    onChange={(e)=>setInputCustomerDeleteId(e.target.value)}
+                    placeholder="กรุณาใส่รหัสลูกค้าที่ต้องการลบ"
+                    />
+                </Row>
+                <Row>
+                    <Col>
+                    <Button onClick={()=>deleteCustomer(inputCustomerDeleteId)}>Delete</Button>
+                    </Col>
+                    <Col>
+                    <Button onClick={()=>cancle()}>Cancle</Button>
+                    </Col>
+                </Row>
+                <Divider/>
+                <List
+                    dataSource={customer}
+                    renderItem={cus =>(
+                        <List.Item>
+                                    {cus.id}--
+                                    {cus.cusDate}--
+                                    {cus.cusName}--
+                                    {cus.cusPhone}--
+                                    {cus.cusCar}--
+                                    {cus.cusOverdue}.
+                        </List.Item>
+                    )}
+                />
+            </Col>
+        </div>)
     }
     else {
         content = (<div className="task">
@@ -145,7 +289,7 @@ function Content(props) {
                     <Button onClick={()=>getCustomerById(inputCustomerId)}>View</Button>
                     </Col>
                     <Col>
-                    <Button >View All</Button>
+                    <Button onClick={()=>getAllCustomer()}>View All</Button>
                     </Col>
                 </Row>
                 <Divider/>

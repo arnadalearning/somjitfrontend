@@ -5,7 +5,7 @@ import Content from '../ContentAdmin';
 
 const items = [
   {
-    label: 'Navigation One',
+    label: 'สำหรับผู้ขาย',
     key: 'mail',
     icon: <DownCircleOutlined />,
     disabled: true,
